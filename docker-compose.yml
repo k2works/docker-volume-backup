@@ -1,0 +1,70 @@
+version: '2'
+
+services:
+  my_db1:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    volumes:
+      - dbdata:/var/lib/mysql
+  my_dba1:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    command: mysql -hmy_db1 -uroot -pmy-secret-pw
+    volumes:
+      - ./backup:/dbdata
+    depends_on:
+      - my_db1
+  my_db2:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    volumes:
+      - dbdata:/var/lib/mysql
+  my_dba2:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    command: mysql -hmy_db2 -uroot -pmy-secret-pw
+    depends_on:
+      - my_db2
+  my_dbdata_export:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    command: [sh, -c,'mysqldump -hmy_db1 -uroot -pmy-secret-pw -A > /dbdata/all.dump']
+    volumes:
+      - ./backup:/dbdata
+    depends_on:
+      - my_db1
+  my_db3:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    volumes:
+      - dbdata2:/var/lib/mysql
+  my_dba3:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    command: mysql -hmy_db3 -uroot -pmy-secret-pw
+    depends_on:
+      - my_db3
+  my_dbdata_import:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    command: [sh, -c, 'mysql -hmy_db3 -uroot -pmy-secret-pw < /dbdata/all.dump']
+    volumes:
+      - ./backup:/dbdata
+    depends_on:
+      - my_db3
+
+volumes:
+  dbdata:
+    external:
+     name: my_dbstore
+  dbdata2:
+    external:
+     name: my_dbstore2
