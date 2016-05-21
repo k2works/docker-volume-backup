@@ -65,7 +65,7 @@ $ docker run -d -p 5000:5000 --name web -v $(pwd)/src/webapp:/opt/webapp trainin
 $ docker run --rm -it -v ~/.bash_history:/root/.bash_history ubuntu /bin/bash
 ```
 
-### データボリュームコンテンを作成してマウントする
+### データボリュームコンテナを作成してマウントする
 ```
 $ docker create -v /dbdata --name pg_dbstore postgres /bin/true
 $ docker run -d --volumes-from pg_dbstore --name pg_db1 postgres
